@@ -1,39 +1,52 @@
 productDataset = {
-            "A": (50, 3, 140),
-            "B": (35, 2, 60),
-            "C": (25, None, None),
-            "D": (12, None, None)
-        }
+    "A": (50, 3, 140),
+    "B": (35, 2, 60),
+    "C": (25, None, None),
+    "D": (12, None, None)
+}
 
-def checkout(list):
-    subTotal = 0
-    formattedList = [(item["code"], item["quantity"]) for item in list] # reformats to give item code and quantity for each entry
-    for item in formattedList:
-        code = item[0]  # item[0] gives the item code ("A", "B", etc.)
-        quantity = item[1]  # item[1] gives the quantity of the item
-        
-        # Retrieve the price information from productDataset
-        priceInfo = productDataset.get(code)
-        if priceInfo:
-            unitPrice = priceInfo[0]  # First element in the tuple is price per
-            if priceInfo[1] != None and priceInfo[2] != None: # provided elements have special prices
-                specialQuantity = priceInfo[1] # Second element is quantity for the special price
-                specialPrice = priceInfo[2] # Third element is special price
-            
-            # Calculate subtotal based on the quantity and pricing
-            if priceInfo[1] != None and priceInfo[2] != None:  # Check if special price is applicable
-                # first part of below calc multiplies the special price to the modulus of special quantities within total quantity requested
-                # second part multiplies the remaining quantity after using speicial qunatity with the unit price
-                # added to subTotal
-                subTotal += (quantity // specialQuantity) * specialPrice + (quantity % specialQuantity) * unitPrice
-            else:
-                subTotal += quantity * unitPrice # added to subTotal
-        else:
-            print(f"Error: {code} not found in productDataset")
-    
-    return f"Your subtotal is {subTotal}."
+"""Check if code is alpha and exists in productDataset.
+    Args:
+    code: Item Code at that index
 
-exampleList = [{"code":"A","quantity":3},{"code":"B","quantity":3},{"code":"C","quantity":1},{"code":"D","quantity":2}] # example list given in task 
+    Raises:
+        ValueError: If code is not a single letter from a-z/A-Z.
+"""
+def validCodeCheck(code):
+    if not isinstance(code, str) or not code.isalpha():
+        raise ValueError(f"Invalid code: '{code}'. Code must be an aplha charcter.")
+    if code not in productDataset:
+        raise ValueError(f"Product with code '{code}' not found in productDataset.")
 
-# Print the output
-print(checkout(exampleList))
+"""Check if quantity is a positive integer.
+    Args:
+        quantity: Quantity of Item Code requested.
+
+    Raises:
+        ValueError: If quantity is not greater than 0.
+        TypeError: If quantity is not an integer.
+"""
+def validQuantityCheck(quantity):
+    if not isinstance(quantity, int):
+        raise TypeError(f"Invalid quantity: '{quantity}'. Quantity must be a positive integer value (not a string, Bool, Float, etc)")
+    if quantity <= 0:
+        raise ValueError(f"Invalid quantity: '{quantity}'. Quantity must be a positive integer.")
+
+"""Validate the productDataset dictionary.
+    Args:
+        productDataSet: Dictionary containing Item Codes and their respective unit and special prices.
+        code: Item Code at index.
+        price: Unit Price at index.
+        specialQuantity: Quantity required for special pricing at index.
+        specialPrice: Special Price of Item at index.
+
+    Raises:
+        ValueError: If entry in dictionary is not a tuple of length 3.
+        ValueError: If price is not a positive integer.
+        ValueError: If specialQuantity is not a positive int or None
+        ValueError: If specialPrice is not a positive int or None
+"""
+def validateProductDataset(productDataset):
+    for code, info in productDataset.items():
+        if not isinstance(info, tuple) or len(info) != 3:
+            raise ValueError(f"Invalid data format for product '{code}
