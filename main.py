@@ -49,4 +49,77 @@ def validQuantityCheck(quantity):
 def validateProductDataset(productDataset):
     for code, info in productDataset.items():
         if not isinstance(info, tuple) or len(info) != 3:
-            raise ValueError(f"Invalid data format for product '{code}
+            raise ValueError(f"Invalid data format for product '{code}' in productDataset. Expected a tuple of length 3.")
+        price, specialQuantity, specialPrice = info
+        if not isinstance(price, (int, float)) or price <= 0:
+            raise ValueError(f"Invalid price value '{price}' for product '{code}' in productDataset. Price must be a positive integer.")
+        if specialQuantity is not None:
+            if not isinstance(specialQuantity, int) or specialQuantity <= 0:
+                raise ValueError(f"Invalid special quantity value '{specialQuantity}' for product '{code}' in productDataset. Quantity must be a positive integer or None.")
+        if specialPrice is not None:
+            if not isinstance(specialPrice, (int, float)) or specialPrice <= 0:
+                raise ValueError(f"Invalid special price value '{specialPrice}' for product '{code}' in productDataset. Price must be a positive number or None.")
+
+"""Retrieve and validate code and quantity from input list.
+    Args:
+        list: Input list
+
+    Returns:
+        formattedLidt: Formatted list so that it contains just Item Codes and their respective Quantities.
+"""
+def retrieveCodeAndQuantity(list):
+    formattedList = []
+    for item in list:
+        code = item.get("code")
+        quantity = item.get("quantity")
+        
+        try:
+            validCodeCheck(code)
+            validQuantityCheck(quantity)
+            formattedList.append((code, quantity))
+        except ValueError as e:
+            print(f"Error: {e}")
+    
+    return formattedList
+
+"""Calculate subtotal based on provided list.
+    Args:
+        list: Input list
+    
+    Returns:
+        Formatted string containing subTotal, the price of all items.
+"""
+def checkout(list):
+    try:
+        validateProductDataset(productDataset)
+        formattedList = retrieveCodeAndQuantity(list)
+    except ValueError as e:
+        return f"Error: {e}"
+
+    subTotal = 0
+    for item in formattedList:
+        code = item[0]
+        quantity = item[1]
+        
+        # Retrieve the price information from productDataset
+        priceInfo = productDataset.get(code)
+        if priceInfo:
+            unitPrice = priceInfo[0]
+            specialQuantity = priceInfo[1]
+            specialPrice = priceInfo[2]
+            
+            # Calculate subtotal based on the quantity and pricing
+            if specialQuantity and specialPrice:  # Check if special price is applicable
+                subTotal += (quantity // specialQuantity) * specialPrice + (quantity % specialQuantity) * unitPrice
+            else:
+                subTotal += quantity * unitPrice
+        else:
+            return f"Error: {code} not found in productDataset"
+
+    return f"Your subtotal is {subTotal}."
+
+# Example list given in the task
+exampleList = [{"code":"A","quantity":3},{"code":"B","quantity":3},{"code":"C","quantity":1},{"code":"D","quantity":2}]
+
+# Print the output
+print(checkout(exampleList))
