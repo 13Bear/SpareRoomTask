@@ -35,6 +35,5 @@ def checkout(list):
 
 exampleList = [{"code":"A","quantity":3},{"code":"B","quantity":3},{"code":"C","quantity":1},{"code":"D","quantity":2}] # example list given in task 
 
-
 # Print the output
 print(checkout(exampleList))
