@@ -117,9 +117,3 @@ def checkout(list):
             return f"Error: {code} not found in productDataset"
 
     return f"Your subtotal is {subTotal}."
-
-# Example list given in the task
-exampleList = [{"code":"A","quantity":3},{"code":"B","quantity":3},{"code":"C","quantity":1},{"code":"D","quantity":2}]
-
-# Print the output
-print(checkout(exampleList))
